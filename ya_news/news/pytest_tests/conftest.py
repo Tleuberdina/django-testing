@@ -1,6 +1,6 @@
-import pytest
 from datetime import datetime, timedelta
 
+import pytest
 from django.test.client import Client
 from django.utils import timezone
 from django.conf import settings
@@ -33,12 +33,31 @@ def not_author_client(not_author):
 
 
 @pytest.fixture
+def url_home():
+    return 'news:home'
+
+
+@pytest.fixture
+def url_detail():
+    return 'news:detail'
+
+
+@pytest.fixture
+def url_delete_comment():
+    return 'news:delete'
+
+
+@pytest.fixture
+def url_edit_comment():
+    return 'news:edit'
+
+
+@pytest.fixture
 def news():
-    news = News.objects.create(
+    return News.objects.create(
         title='Новость',
         text='Текст новости',
     )
-    return news
 
 
 @pytest.fixture
@@ -53,7 +72,6 @@ def all_news(news):
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
     ]
     News.objects.bulk_create(all_news)
-    return all_news
 
 
 @pytest.fixture
@@ -64,19 +82,17 @@ def slug_for_args(news):
 @pytest.fixture
 def form_data():
     return {
-        'title': 'Новый заголовок',
         'text': 'Новый текст',
     }
 
 
 @pytest.fixture
 def comment(news, author):
-    comment = Comment.objects.create(
+    return Comment.objects.create(
         news=news,
         text='Текст комментария',
         author=author
     )
-    return comment
 
 
 @pytest.fixture
@@ -87,7 +103,6 @@ def two_comment(news, author):
             news=news, author=author, text=f'Tекст {index}',
         )
         two_comment.created = now + timedelta(days=index)
-    return
 
 
 @pytest.fixture
