@@ -4,6 +4,7 @@ import pytest
 from django.test.client import Client
 from django.utils import timezone
 from django.conf import settings
+from django.urls import reverse
 
 from news.models import News, Comment
 
@@ -34,22 +35,27 @@ def not_author_client(not_author):
 
 @pytest.fixture
 def url_home():
-    return 'news:home'
+    return reverse('news:home')
 
 
 @pytest.fixture
-def url_detail():
-    return 'news:detail'
+def url_detail_news(news):
+    return reverse('news:detail', args=(news.id,))
 
 
 @pytest.fixture
-def url_delete_comment():
-    return 'news:delete'
+def url_detail_comment(comment):
+    return reverse('news:detail', args=(comment.id,))
 
 
 @pytest.fixture
-def url_edit_comment():
-    return 'news:edit'
+def url_delete_comment(comment):
+    return reverse('news:delete', args=(comment.id,))
+
+
+@pytest.fixture
+def url_edit_comment(comment):
+    return reverse('news:edit', args=(comment.id,))
 
 
 @pytest.fixture
@@ -96,13 +102,13 @@ def comment(news, author):
 
 
 @pytest.fixture
-def two_comment(news, author):
+def new_comment(news, author):
     now = timezone.now()
     for index in range(10):
-        two_comment = Comment.objects.create(
+        new_comment = Comment.objects.create(
             news=news, author=author, text=f'Tекст {index}',
         )
-        two_comment.created = now + timedelta(days=index)
+        new_comment.created = now + timedelta(days=index)
 
 
 @pytest.fixture

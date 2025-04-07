@@ -22,9 +22,9 @@ class TestContent(TestCase):
             text='Текст',
             slug='note-slug',
             author=cls.author)
-        cls.url_list = 'notes:list'
-        cls.url_edit = 'notes:edit'
-        cls.url_add = 'notes:add'
+        cls.url_list = reverse('notes:list', args=None)
+        cls.url_edit = reverse('notes:edit', args=(cls.note.slug,))
+        cls.url_add = reverse('notes:add', args=None)
 
     def test_notes_list_for_different_users(self):
         """
@@ -36,9 +36,8 @@ class TestContent(TestCase):
             (self.author_client, True),
             (self.not_author_client, False),
         )
-        url = reverse(self.url_list)
         for user, result in users_result:
-            response = user.get(url)
+            response = user.get(self.url_list)
             object_list = response.context['object_list']
             assert (self.note in object_list) is result
 
@@ -48,12 +47,11 @@ class TestContent(TestCase):
         заметки передаются формы.
         """
         urls = (
-            (self.url_edit, (self.note.slug,)),
-            (self.url_add, None),
+            (self.url_edit),
+            (self.url_add),
         )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
+        for url in urls:
+            with self.subTest(name=url):
                 response = self.author_client.get(url)
                 assert 'form' in response.context
                 assert isinstance(response.context['form'], NoteForm)
