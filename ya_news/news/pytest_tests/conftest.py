@@ -34,6 +34,16 @@ def not_author_client(not_author):
 
 
 @pytest.fixture
+def url_login():
+    return reverse('users:login')
+
+
+@pytest.fixture
+def url_signup():
+    return reverse('users:signup')
+
+
+@pytest.fixture
 def url_home():
     return reverse('news:home')
 
@@ -81,11 +91,6 @@ def all_news(news):
 
 
 @pytest.fixture
-def slug_for_args(news):
-    return (news.id,)
-
-
-@pytest.fixture
 def form_data():
     return {
         'text': 'Новый текст',
@@ -109,8 +114,3 @@ def new_comment(news, author):
             news=news, author=author, text=f'Tекст {index}',
         )
         new_comment.created = now + timedelta(days=index)
-
-
-@pytest.fixture
-def comment_slug_for_args(comment):
-    return (comment.id,)

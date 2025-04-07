@@ -22,9 +22,9 @@ class TestContent(TestCase):
             text='Текст',
             slug='note-slug',
             author=cls.author)
-        cls.url_list = reverse('notes:list', args=None)
+        cls.url_list = reverse('notes:list')
         cls.url_edit = reverse('notes:edit', args=(cls.note.slug,))
-        cls.url_add = reverse('notes:add', args=None)
+        cls.url_add = reverse('notes:add')
 
     def test_notes_list_for_different_users(self):
         """
@@ -37,21 +37,19 @@ class TestContent(TestCase):
             (self.not_author_client, False),
         )
         for user, result in users_result:
-            response = user.get(self.url_list)
-            object_list = response.context['object_list']
-            assert (self.note in object_list) is result
+            with self.subTest(user=user):
+                response = user.get(self.url_list)
+                object_list = response.context['object_list']
+                assert (self.note in object_list) is result
 
     def test_pages_contains_form(self):
         """
         Проверяем, что на страницы создания и редактирования
         заметки передаются формы.
         """
-        urls = (
-            (self.url_edit),
-            (self.url_add),
-        )
+        urls = (self.url_edit, self.url_add)
         for url in urls:
-            with self.subTest(name=url):
+            with self.subTest(url=url):
                 response = self.author_client.get(url)
                 assert 'form' in response.context
                 assert isinstance(response.context['form'], NoteForm)

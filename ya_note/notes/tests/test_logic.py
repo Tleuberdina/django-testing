@@ -28,6 +28,7 @@ class TestCreateLogic(TestCase):
         }
         cls.url_add = reverse('notes:add')
         cls.url_success = reverse('notes:success')
+        cls.url_login = reverse('users:login')
 
     def test_user_can_create_note(self):
         """Проверяем, что залогиненный пользователь может создать заметку."""
@@ -45,8 +46,7 @@ class TestCreateLogic(TestCase):
         """Проверяем, что анонимный пользователь не может создать заметку."""
         note_count_db = Note.objects.count()
         response = self.client.post(self.url_add, data=self.form_data)
-        login_url = reverse('users:login')
-        expected_url = f'{login_url}?next={self.url_add}'
+        expected_url = f'{self.url_login}?next={self.url_add}'
         self.assertRedirects(response, expected_url)
         self.assertEqual(Note.objects.count(), note_count_db)
 
